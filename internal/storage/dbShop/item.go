@@ -3,12 +3,11 @@ package dbShop
 import (
 	"database/sql"
 	"fmt"
+	"github.com/google/uuid"
 	pb "github.com/minishop/genproto/shop"
 	"github.com/minishop/internal/logger"
 	"github.com/spf13/cast"
 	"go.uber.org/zap"
-
-	"github.com/google/uuid"
 )
 
 type ItemInt interface {
@@ -85,7 +84,7 @@ func (s *ItemStr) UpdateItem(req *pb.UpdateItemReq) (*pb.UpdateItemRes, error) {
 		log.Error("Error with update table", zap.Error(err))
 		return nil, err
 	}
-	log.
+	log.Named("Successfully item updated")
 	return &pb.UpdateItemRes{Message: "Item Updated"}, nil
 }
 
@@ -102,10 +101,58 @@ func (s *ItemStr) DeleteItem(req *pb.DeleteItemReq) (*pb.DeleteItemRes, error) {
 	return &pb.DeleteItemRes{Message: "Item Deleted"}, nil
 }
 
-func (s *ItemStr) GetItem(item ItemInt) error {
-	return nil
+func (s *ItemStr) GetItem(req *pb.GetItemReq) (*pb.GetItemRes, error) {
+	query := `select * from shop where id = $1`
+	log, _ := logger.NewLogger()
+
+	resp := &pb.GetItemRes{}
+
+	err := s.DB.QueryRow(query, req.Id).Scan(&resp.Item.Id, &resp.Item.Name, &resp.Item.ImgUrl, &resp.Item.Category,
+		&resp.Item.UserName, &resp.Item.UserPhone, &resp.Item.CreatedAt, &resp.Item.UpdatedAt)
+	if err != nil {
+		log.Error("Error with get table", zap.Error(err))
+		return nil, err
+	}
+	log.Named("Successfully get item")
+
+	return resp, nil
+
 }
 
-func (s *ItemStr) GetAllItem(item ItemInt) error {
-	return nil
+func (s *ItemStr) GetAllItem(req *pb.GetAllItemReq) (*pb.GetAllItemRes, error) {
+	query := "select id,name,img_url,categorys,user_name,user_phone, created_at,updated_at from shop where deleted_at = 0"
+	log, _ := logger.NewLogger()
+	filter := ""
+	count := 1
+	if req.Id != "" && req.Id != "string" {
+		filter += " and id =" + req.Id
+	}
+	if req.Name != "" && req.Name != "string" {
+		filter += " and name =" + req.Name
+	}
+	if req.ImgUrl != "" && req.ImgUrl != "string" {
+		filter += " and img_url =" + req.ImgUrl
+	}
+	if req.UserName != "" && req.UserName != "string" {
+		filter += " and user_name =" + req.UserName
+	}
+	if req.UserPhone != "" && req.UserPhone != "string" {
+		filter += "and user_phone =" + req.UserPhone
+	}
+
+	res := []*pb.ItemModel{}
+	rows, err := s.DB.Query(query, filter)
+	if err != nil {
+		log.Error("Error with get table", zap.Error(err))
+	}
+
+	for rows.Next() {
+		item := &pb.ItemModel{}
+		err := rows.Scan(&item.Id, &item.Name, &item.ImgUrl, &item.Category, &item.UserName, &item.UserPhone, &item.CreatedAt, &item.UpdatedAt)
+		if err != nil {
+			log.Error("Error with get table", zap.Error(err))
+		}
+		res = append(res, item)
+	}
+	return &pb.GetAllItemRes{Items: res}, err
 }
