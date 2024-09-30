@@ -11,13 +11,13 @@ proto-gen:
 	./scripts/gen-proto.sh ${CURRENT_DIR}
 
 mig-up:
-	migrate -database 'postgres://postgres:1234@localhost:5432/yusolve?sslmode=disable' -path migration up
+	migrate -database 'postgres://postgres:1234@localhost:5432/minishop?sslmode=disable' -path migration up
 
 mig-down:
-	migrate -database 'postgres://postgres:1234@localhost:5432/yusolve?sslmode=disable' -path migration down
+	migrate -database 'postgres://postgres:1234@localhost:5432/minishop?sslmode=disable' -path migration down
 
 mig-force:
-	migrate -database 'postgres://postgres:1234@localhost:5432/yusolve?sslmode=disable' -path migration force 1
+	migrate -database 'postgres://postgres:1234@localhost:5432/minishop?sslmode=disable' -path migration force 1
 
 SWAGGER := ~/go/bin/swag
 SWAGGER_DOCS := docs

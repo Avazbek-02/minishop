@@ -1,0 +1,69 @@
+syntax="proto3";
+
+option go_package = "genproto/shop";
+
+package shop;
+
+service MiniShop{
+    rpc CreateItem(CreateItemReq) returns (CreateItemRes);
+    rpc UpdateItem(UpdateItemReq) returns (UpdateItemRes);
+    rpc GetItem(GetItemReq) returns (GetItemRes);
+    rpc GetAllItem(GetAllItemReq) returns (GetAllItemRes);
+    rpc DeleteItem(DeleteItemReq) returns (GetAllItemRes);
+}
+
+message ItemModel{
+    string id = 1;
+    string name = 2;
+    string img_url = 3;
+    string category = 4;
+    string user_name = 5;
+    string user_phone = 6;
+    string created_at = 7;
+    string updated_at = 8;
+}
+
+message CreateItemReq{
+    ItemModel item = 1;
+}
+
+message CreateItemRes{
+    string message = 1;
+}
+
+message UpdateItemReq{
+    ItemModel updateitem = 1;
+}
+
+message UpdateItemRes{
+    string message = 1;
+}
+
+message  GetItemReq{
+    string id = 1;
+}
+
+message GetItemRes{
+    ItemModel item = 1;
+}
+
+message  GetAllItemReq{
+    string id = 1;
+    string name = 2;
+    string img_url = 3;
+    string category = 4;
+    string user_name = 5;
+    string user_phone = 6;
+}
+
+message GetAllItemRes{
+    repeated ItemModel items = 1;
+}
+
+message  DeleteItemReq{
+    string id = 1;
+}
+
+message DeleteItemRes{
+    string message = 1;
+}
