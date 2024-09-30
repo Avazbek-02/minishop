@@ -10,4 +10,8 @@ create table if not exists shop(
     created_at timestamp default now() not null, 
     updated_at timestamp default now() not null, 
     deleted_at bigint default 0 not null
-)
+);
+
+
+INSERT INTO shop (name, img_url, categorys, user_name, user_phone)
+VALUES ('My Shop', 'https://example.com/image.jpg', 'texnika', 'John Doe', '+1234567890');
